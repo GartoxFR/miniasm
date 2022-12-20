@@ -8,15 +8,13 @@ pub fn generate_label_table<'a>(program: &'a [Line<'a>]) -> Result<BTreeMap<&'a 
 
     for (label, instr) in program {
         if let Some(label) = label.as_deref() {
-            if table.contains_key(label) {
-                return Err(Error(format!("Label {} is defined multiple times", label)));
-            }
-
             if label.eq("isr") {
                 addr = 0xA0;
             }
 
-            table.insert(label, addr);
+            if table.insert(label, addr).is_some() {
+                return Err(Error(format!("Label {} is defined multiple times", label)));
+            }
         }
 
         addr = addr
