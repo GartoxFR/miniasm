@@ -25,11 +25,11 @@ pub fn generate_label_table<'a>(program: &'a [Line<'a>]) -> Result<BTreeMap<&'a 
     Ok(table)
 }
 
-pub fn compile(program: &[Line]) -> Vec<u8> {
+pub fn compile(program: &[Line]) -> Result<Vec<u8>, Error> {
     let mut bytes: Vec<u8> = vec![];
     let mut addr: u8 = 0;
 
-    let label_table = generate_label_table(program).unwrap();
+    let label_table = generate_label_table(program)?;
 
     for (label, instr) in program {
         match *label {
@@ -37,7 +37,7 @@ pub fn compile(program: &[Line]) -> Vec<u8> {
             _ => (),
         }
 
-        let bin_instr = instr.to_binary(addr, &label_table).unwrap();
+        let bin_instr = instr.to_binary(addr, &label_table)?;
 
         match bin_instr {
             BinaryInstruction::SingleByte(arr) => {
@@ -51,5 +51,5 @@ pub fn compile(program: &[Line]) -> Vec<u8> {
         }
     }
 
-    bytes
+    Ok(bytes)
 }
