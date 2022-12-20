@@ -196,6 +196,6 @@ pub fn line(input: &str) -> IResult<&str, Line> {
 pub fn parse_program(input: &str) -> IResult<&str, Vec<Line>> {
     let (input, program) =
         separated_list0(many0(line_ending), delimited(space0, line, space0))(input)?;
-    let (input, _) = preceded(many0(line_ending), eof)(input)?;
+    let (input, _) = preceded(many0(alt((space1, line_ending))), eof)(input)?;
     Ok((input, program))
 }
